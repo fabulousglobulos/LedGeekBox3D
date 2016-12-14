@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using HelixToolkit.Wpf;
 
 namespace LedGeekBox3D
 {
+    using System.Threading;
     using System.Windows.Media;
     using System.Windows.Media.Media3D;
 
@@ -52,6 +54,11 @@ namespace LedGeekBox3D
 
             // Set the property, which will be bound to the Content property of the ModelVisual3D (see MainWindow.xaml)
             this.Model = modelGroup;
+            
+           Thread t = new Thread(Do);
+           t.Start();
+
+            //Do();
         }
 
         /// <summary>
@@ -658,6 +665,42 @@ namespace LedGeekBox3D
             transformations.Add(new TranslateTransform3D(16, 16, 16));
 
             return transformations;
+        }
+
+
+
+
+
+        private void Do()
+        {
+            Thread.Sleep(3000);
+
+            int max = GetAllSheres().Count();
+            for (int i = 0; i < max; i++)
+            {
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+
+                    Model3DGroup m = Model as Model3DGroup;
+                    if (m != null)
+                    {
+                        //foreach (var x in m.Children)
+                        var x = m.Children[i];
+                        {
+                            GeometryModel3D g = x as GeometryModel3D;
+                            if (g != null)
+                            {
+                                g.Material = MaterialHelper.CreateMaterial(Colors.LightGray);
+
+                            }
+
+                        }
+                    }
+                });
+                Thread.Sleep(50);
+            }
+
         }
 
     }
